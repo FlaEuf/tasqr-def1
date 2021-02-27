@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block head_title %}{{block.super}}|Login{% endblock head_title %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+{% if form.errors %}
+  <p>Your username/password are incorrect. Please try again.</p>
+{% endif %}
+
+<div class="row justify-content-center mt-5">
+  <div class="col-6">
+    <form action="{% url 'login' %}" method="post">
+      {% csrf_token %}
+      {{form|crispy}}
+      <input class='btn btn-info my-3' type="submit" value="Login">
+      <input type="hidden" name="next" value="{{next}}">
+    </form>
+
+    <p><a href="{% url 'password_reset' %}">Password Dimenticata?</a></p>
+  </div>
+</div>
+
+
+{% endblock content %}

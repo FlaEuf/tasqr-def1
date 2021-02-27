@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block head_title %}{{block.super}}|{{prodotto.name}}{% endblock head_title %}
+
+{% block mycss %}
+    <style>
+      img {
+        border-radius: 5px;
+      }
+    </style>
+{% endblock mycss %}
+
+{% block extra_js %}
+{% endblock extra_js %}
+
+{% block content %}
+  {% if prodotto.image != None %}
+    {% load static %}
+    <div class="row h-100 border mt-5 rounded border-0">
+      <div class="col-md-7">
+        <img src="{{prodotto.image.url}}" alt="{{prodotto.name}}" style='width:100%;'>
+      </div>
+      <div class="col-md-5 my-auto">
+        <h2>{{prodotto.name}}</h2>
+        <p>{{prodotto.description}}</p>
+        {% if prodotto.discount_price != None %}
+          <del><h3>{{prodotto.price}}€</h3></del>
+          <h3>{{prodotto.discount_price}}€</h3>
+        {% else %}
+          <h3>{{prodotto.price}}€</h3>
+        {% endif %}
+        {% if prodotto.name == 'Tansta-Shirt' %}
+          <br>
+          <label for="username">Inserisci il tuo Username di Instagram! Tranquillo, se sbagli potrai modificarlo in seguito...</label>
+
+            <form id='payment_form' action="" method="post">
+              {% csrf_token %}
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="basic-addon1">@</span>
+                </div>
+                <input type="text" id='username' class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" name='user_query'>
+              </div>
+              <button id='payment_submit' class='btn btn-info' type='submit' {% if not request.user.is_authenticated %}disabled{% endif %}></a> <i class="fas fa-credit-card"></i></button><br>
+              <label class='text-muted' for="payment_submit"><small>Paga con Carta</small></label>
+            </form>
+            <p class='text-muted mt-5'>*Per acquistare il prodotto è necessario il login</p>
+            {% if messages %}
+              <ul class="messages">
+                  {% for message in messages %}
+                    <div class="alert alert-danger" role=alert>
+                      <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                    </div>
+                  {% endfor %}
+              </ul>
+            {% endif %}
+
+        {% endif %}
+        {% if prodotto.name == 'Tas-Shirt' %}
+          <br>
+          <label for="basic-url">Inserisci l'URL da collegare alla t-shirt! E non pensarci troppo, puoi modificarlo quando vuoi...</label>
+
+            <form id='payment_form' action="" method="post">
+              {% csrf_token %}
+              <!-- <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="basic-addon3">https://example.com/users/</span>
+                </div>
+                <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3" name='user_query'>
+              </div> -->
+              <button id='payment_submit' class='btn btn-info' type='submit' {% if not request.user.is_authenticated %}disabled{% endif %}></a> <i class="fas fa-credit-card"></i></button><br>
+              <label class='text-muted' for="payment_submit"><small>Paga con Carta</small></label>
+            </form>
+            <p class='text-muted mt-5'>*Per acquistare il prodotto è necessario il login</p>
+            {% if messages %}
+              <ul class="messages">
+                  {% for message in messages %}
+                    <div class="alert alert-danger" role=alert>
+                      <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                    </div>
+                  {% endfor %}
+              </ul>
+            {% endif %}
+
+        {% endif %}
+      </div>
+    </div>
+  {% else %}
+    <div class="mt-5">
+      <h2>{{prodotto.name}}</h2>
+      <p>{{prodotto.description}}</p>
+      {% if prodotto.discount_price != None %}
+        <del><h3>{{prodotto.price}}€</h3></del>
+        <h3>{{prodotto.discount_price}}€</h3>
+      {% else %}
+        <h3>{{prodotto.price}}€</h3>
+      {% endif %}
+      <button class='btn btn-info' type="button" name="button">Acquista!</button>
+    </div>
+  {% endif %}
+
+{% endblock content %}

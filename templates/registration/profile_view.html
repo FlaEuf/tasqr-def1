@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% block head_title %}{{block.super}}|{{user}}{% endblock head_title %}
+
+{% block mycss %}
+  <style>
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    .item {
+      transition: .3s ease;
+    }
+
+    .item:hover {
+      transform: scale(1.1);
+    }
+
+    .border {
+      cursor: pointer;
+    }
+
+    .fas {
+      cursor: pointer;
+      transition: .3s ease;
+    }
+
+    .fas:hover{
+      color:gray;
+    }
+
+    .add {
+      font-size: 40px;
+      padding: 10px;
+      border-radius: 5px;
+      background-color: white;
+      box-shadow: 0 0 2px black;
+      transition: .3s ease;
+    }
+
+    .add:hover {
+      transform: scale(1.05);
+    }
+
+    #info_passkey {
+      margin-top: 50px;
+    }
+
+  </style>
+{% endblock mycss %}
+
+{% block extra_js %}
+  <script>
+
+    function show_code_popup(count,code_name) {
+      var popup_content = document.getElementsByName(code_name)[count];
+      popup_content.style.display = (popup_content.style.display == 'none') ? 'block' : 'none'
+    }
+
+    function show_passkey_code(){
+      var passkey_form = document.getElementById("passkey_input");
+      passkey_form.style.display = (passkey_form.style.display == "none") ? "block" : "none"
+    }
+
+  </script>
+{% endblock extra_js %}
+
+{% block content %}
+  <h3 class='m-3'>Tas-QR ti dà il benvenuto, <strong>{{user}}</strong></h3>
+  <hr>
+  <div class='jumbotron mb-0'>
+    <div class="row justify-content-center">
+      <div class="col-lg-6 col-md-8 col-9">
+        {% if codici.exists or socialcodici.exists %}
+          {% for code in codici %}
+            {% if forloop.first %}
+              <h2 class="mb-2">Codici Qr:</h2>
+            {% endif %}
+            {% if code.bought %}
+              <div class="card m-2 item">
+                  <div class="row no-gutters">
+                    <div class="col-md-4 m-auto">
+                      <img src="{{code.image_qr.url}}" class='card-img' alt="{{code.id}}">
+                    </div>
+                    <div class="col-md-8 my-auto">
+                      <div class="card-body">
+                        <h5 class='card-title'>Id: {{code.uuid}}</h5>
+                        <a href='{{code.get_view}}' class='text-decoration-none' style='color:inherit;'>
+                          <p class='card-text'>Collegamento a: <strong>{{code.redirect}}</strong></p>
+                        </a>
+                        <form style='display:none;' name='standard_code_popup' action="" method="post">
+                            {% csrf_token %}
+                            <div class="input-group my-3">
+                              <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">http://...</span>
+                              </div>
+                              <input name='{{code.uuid}}' type="text" class="form-control" placeholder="URL" aria-label="URL" aria-describedby="basic-addon1">
+                              <button type="submit" class='btn btn-link border'><i class="far fa-check-circle"></i></button>
+                            </div>
+                        </form>
+                        {% with counter=forloop.counter0 %}
+                        <span title='Modifica'>
+                          <a onclick="show_code_popup({{counter}},'standard_code_popup')" style='color:inherit;'><i class="fas fa-edit"></i></a>
+                        </span>
+                          <p class="text-muted"><i class="far fa-eye"></i> {{code.views}}</p>
+                        {% endwith %}
+                      </div>
+                    </div>
+                  </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+          <br>
+          {% for code in socialcodici %}
+            {% if forloop.first %}
+              <h2 class="mb-2">SocialCodici Qr:</h2>
+            {% endif %}
+            {% if code.bought %}
+              <div class="card m-2 item">
+                  <div class="row no-gutters">
+                    <div class="col-md-4 m-auto">
+                      <img src="{{code.image_qr.url}}" class='card-img' alt="{{code.id}}">
+                    </div>
+                    <div class="col-md-8 my-auto">
+                      <div class="card-body">
+                        <h5 class='card-title'>Id: {{code.uuid}}</h5>
+                        <a href='{{code.get_view}}' class='text-decoration-none' style='color:inherit;'>
+                          <p class='card-text'>Collegamento a: <strong name='social_slug'>@{{code.social_slug}}</strong></p>
+                        </a>
+                        <form style='display:none;' name='social_code_popup' action="" method="post">
+                            {% csrf_token %}
+                            <div class="input-group my-3">
+                              <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">@</span>
+                              </div>
+                              <input name='{{code.uuid}}' type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
+                              <button type="submit" class='btn btn-link border'><i class="far fa-check-circle"></i></button>
+                            </div>
+                        </form>
+                        {% with counter=forloop.counter0 %}
+                          <span title='Modifica'>
+                            <a onclick="show_code_popup({{counter}},'social_code_popup')" style='color:inherit;'><i class="fas fa-edit"></i></a>
+                          </span>
+                            <p class="text-muted"><i class="far fa-eye"></i> {{code.views}}</p>
+                        {% endwith %}
+                      </div>
+                    </div>
+                  </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+
+        {% else %}
+
+          <h2>Non hai ancora nessun codice...</h2>
+          <h5>Naviga su Prodotti per esplorare le nostre scelte e cominciare ad acquistare ;-)</h5>
+
+        {% endif %}
+        {% if messages %}
+          <ul class="messages">
+              {% for message in messages %}
+                <div {% if not message.level_tag|lower == 'error' %}class="alert alert-{{message.level_tag|lower}} m-auto"{% else %}class='alert alert-danger m-auto'{% endif %} role=alert>
+                  <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                </div>
+              {% endfor %}
+          </ul>
+        {% endif %}
+        <p id="info_passkey" class="text-muted">Hai acquistato la t-shirt senza prima personalizzarla? Nessun problema, inserisci qui la PassKey cliccando sul '+' per collegare il QR al tuo account e modificarne il contenuto!</p>
+        <a onclick="show_passkey_code()"><i class="fas fa-plus add"></i></a>
+        <form style="display:none;" id="passkey_input" method="post" action="{% url 'new_code_by_passkey' %}" class="mt-3">
+          {% csrf_token %}
+          <div class="input-group">
+            <input type="text" name="passkey" class="form-control" placeholder="PassKey">
+            <button type="submit" class='btn btn-link border'><i class="far fa-check-circle"></i></button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock content %}

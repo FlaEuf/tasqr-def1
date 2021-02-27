@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% block head_title %}{{block.super}}|Logout{% endblock head_title %}
+
+{% block content %}
+  <p class='mt-3'>Logged Out!</p>
+  <a href="{% url 'login' %}">Clicca qui per effettuare di nuovo il login.</a>
+{% endblock content %}

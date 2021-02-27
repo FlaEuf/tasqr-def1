@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block head_title %}{{block.super}}|Registration{% endblock head_title %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<!-- {% if messages %}
+  <ul class="messages">
+      {% for message in messages %}
+        <div {% if not message.level_tag|lower == 'error' %}class="alert alert-{{message.level_tag|lower}} m-auto"{% else %}class='alert alert-danger m-auto'{% endif %} role=alert>
+          <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        </div>
+      {% endfor %}
+  </ul>
+{% endif %} -->
+  <div class="row justify-content-center mt-3">
+    <div class="col-6">
+      <h2>Registrazione Utente</h2>
+      <form class="" action="" method="post">
+        {% csrf_token %}
+        {% if form.username.errors %}
+          {{form.username.errors}}
+        {% endif %}
+        {{form.username|as_crispy_field}}
+        {% if form.email.errors %}
+          {{form.email.errors}}
+        {% endif %}
+        {{form.email|as_crispy_field}}
+        {% if form.password1.errors %}
+          {{form.password1.errors}}
+        {% endif %}
+        {{form.password1|as_crispy_field}}
+        {% if form.password2.errors %}
+          {{form.password2.errors}}
+        {% endif %}
+        {{form.password2|as_crispy_field}}
+
+        <input class='btn btn-info' type="submit" value="Registrati">
+      </form>
+    </div>
+  </div>
+
+{% endblock content %}

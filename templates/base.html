@@ -1,0 +1,185 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="it" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="icon" href="{% static 'img/1801544-84.png'%}">
+    <title>{% block head_title %}Tas-QR{% endblock head_title %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/social_icons.css' %}">
+    {% block mycss %}{% endblock mycss %}
+
+    <style media="screen">
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      .fa-envelope {
+        font-size:30px;
+      }
+
+      .item {
+        box-shadow: 0 0 2px black;
+      }
+
+      .grow {
+        transition: all .3s ease;
+      }
+
+      .grow:hover {
+        transform: scale(1.1);
+      }
+
+      .grow-margin {
+        transition: all .3s ease;
+      }
+
+      .grow-margin:hover {
+        transform: scale(1.05);
+      }
+
+      .no-underline:hover {
+        text-decoration: none;
+      }
+
+      #footer {
+        position: relative;
+        bottom: 0;
+      }
+
+    </style>
+
+    <script src="https://kit.fontawesome.com/51fbbb0ef1.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+    {% block extra_js %}{% endblock extra_js %}
+  </head>
+  <body>
+    <nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="{% url 'home' %}">
+        <img src="{% static 'img/tas-qr.png' %}" width="90" height="45" class="d-inline-block align-top" alt="logo">
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id='navbarNavDropdown'>
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="{% url 'home' %}">Home <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownProdottiLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Prodotti
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdownProdottiLink">
+              <a class='dropdown-item' href="{% url 'tshirtlist' %}">T-Shirt</a>
+            </div>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#info">Info</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link assistance" href="#footer">Assistenza & Contatti</a>
+          </li>
+          {% if request.user.is_staff %}
+            <li class='nav-item'>
+              <a class='nav-link btn btn-danger ml-2' href="{% url 'admin:index' %}">Admin</a>
+            </li>
+            <li class='nav-item'>
+              <a class="nav-link btn btn-danger ml-2" href="{% url 'requests' %}">Assistenza</a>
+            </li>
+          {% endif %}
+        </ul>
+        <ul class='navbar-nav ml-auto'>
+          {% if request.user.is_authenticated %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                {{request.user}}
+              </a>
+              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+                <a class="dropdown-item" href="{% url 'profileview' user=request.user %}">Profilo</a>
+                <a class="dropdown-item" href="{% url 'password_reset' %}">Recupero Credenziali</a>
+                <a class="dropdown-item" href="{% url 'logout' %}">Esci</a>
+              </div>
+            </li>
+          {% else %}
+            <li class='nav-item active'>
+              <a class='nav-link' href="{% url 'login' %}">Login</a>
+            </li>
+            <li class='nav-item active'>
+              <a class='nav-link' href="{% url 'registration' %}">Registrati</a>
+            </li>
+          {% endif %}
+        </ul>
+      </div>
+    </nav>
+    <!-- <div class="full-body" style='height:100%;position:relative;'> -->
+    <div class="container text-center" style='min-height:674px;'>
+      {% block content %}
+      {% endblock content %}
+    </div>
+    <footer id='footer'>
+      <div style='max-width:100%;' class="container bg-light text-center mt-5 border">
+        <div class="row justify-content-center">
+          <div class="col-md-3">
+            <h5 class='mt-2 mb-2'>Contattaci sui Social:</h5>
+            <div class="my-3">
+              <a class="btn btn-social-icon btn-instagram mx-2" href='https://www.instagram.com/tasqr_moda/'>
+                <span class="fa fa-instagram"></span>
+              </a>
+              <a class="btn btn-social-icon btn-facebook mx-2">
+                <span class="fa fa-facebook"></span>
+              </a>
+              <a class="btn btn-social-icon btn-twitter mx-2">
+                <span class="fa fa-twitter"></span>
+              </a>
+            </div>
+            <h5>Contattaci via Email:</h5>
+            <div>
+              <a href="mailto:tasqrshirt@gmail.com">
+                <i class="fas fa-envelope"></i>
+                <p>tasqrshirt@gmail.com</p>
+              </a>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <h5 class='mt-2 mb-0'>Contattaci con Messaggio:</h5>
+            <p class='text-muted'>(Estremamente consigliato)</p>
+            <form action="{% url 'help_request' %}" method="post">
+              {% csrf_token %}
+              <div class="form-group">
+                <textarea name="message" class='form-control' rows="6" cols="18" placeholder="Scrivi qui una richiesta d'assistenza privata (è necessario il login)"></textarea>
+                <div class="px-0 mt-2">
+                  <button type="submit" class='btn btn-info mx-auto'>Invia</button>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="col-md-3">
+            <h5 class='mt-2 mb-0'>Contattaci per Telefono:</h5>
+            <p class='text-muted'>(Frequentemente il numero può essere irraggiungibile)</p>
+            <div class="card">
+              <div class="card-header">
+                <p class='mb-0'>Flavio Giacomo Euforbio (Founder)</p>
+              </div>
+              <div class="card-body">
+                <p class='my-auto'><span><a href="tel:+393880536151"><i class="fas fa-phone-alt"></i></span>  +39 388 05 36151</a></p>
+              </div>
+              <div class="card-footer">
+                <p class='text-muted mb'>Clicca direttamente sul numero per chiamarmi</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+    <!-- </div> -->
+
+  </body>
+</html>
